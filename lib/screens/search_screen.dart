@@ -1,15 +1,71 @@
 import 'package:flutter/material.dart';
-import 'youtube_data_api.dart';
-import 'models/video.dart';
+import 'package:media_vault/models/video.dart';
+import 'package:media_vault/screens/convert_screen.dart';
+import 'package:media_vault/screens/download_screen.dart';
+import 'package:media_vault/screens/play_screen.dart';
+import 'package:media_vault/youtube_data_api.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _SearchScreenState extends State<SearchScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    SearchScreenContent(),
+    ConvertScreen(),
+    DownloadScreen(),
+    PlayScreen(),
+  ];
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+        selectedItemColor: Colors.blue,  
+        unselectedItemColor: Colors.grey,  
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.swap_horiz),
+            label: 'Convert',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.download),
+            label: 'Download',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.play_circle_fill),
+            label: 'Play',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SearchScreenContent extends StatefulWidget {
+  @override
+  _SearchScreenContentState createState() => _SearchScreenContentState();
+}
+
+class _SearchScreenContentState extends State<SearchScreenContent> {
   final YoutubeDataApi _youtubeDataApi = YoutubeDataApi();
   final TextEditingController _controller = TextEditingController();
   List<Video> _videos = [];
@@ -21,9 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     try {
-      const apiKey = 'AIzaSyAEcsjbv7bmgIkrYAwCpLghxDNXuvu8zjQ'; // Replace with your YouTube Data API key
+      const apiKey = 'AIzaSyAEcsjbv7bmgIkrYAwCpLghxDNXuvu8zjQ';
       final query = _controller.text;
-      final videos = await _youtubeDataApi.fetchSearchVideo(query, apiKey);
+      final videos = await _youtubeDataApi.fetchSearchVideo(query, apiKey, maxResults: 69);
       setState(() {
         _videos = videos;
         _isLoading = false;
@@ -40,11 +96,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
+    return SafeArea(
+      child: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.lightBlue, Colors.white10],
+            colors: [Colors.blue, Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -53,10 +109,12 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(28.0),
+                padding: const EdgeInsets.only(left: 30, right: 30, top: 30, bottom: 20),
                 child: Container(
                   color: Colors.white,
                   child: TextField(
+                    autocorrect: true,
+                    textAlign: TextAlign.justify,
                     controller: _controller,
                     decoration: const InputDecoration(
                       hintText: "Search for YouTube Videos here...",
@@ -73,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: _searchVideos,
                 child: const Text("Search"),
               ),
+              const SizedBox(height: 18),
               _isLoading
                   ? const CircularProgressIndicator()
                   : Expanded(
@@ -86,6 +145,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 : null,
                             title: Text(video.title ?? 'No title'),
                             subtitle: Text(video.channelName ?? 'No channel name'),
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/details',
+                                arguments: video,
+                              );
+                            },
                           );
                         },
                       ),
