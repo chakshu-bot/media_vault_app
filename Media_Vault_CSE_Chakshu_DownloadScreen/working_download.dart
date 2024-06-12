@@ -144,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Your Downloaded Videos',
           style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
         ),
@@ -152,10 +152,10 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView.builder(
         itemCount: _videoData.length,
         itemBuilder: (BuildContext context, int index) {
-          final data_video = _videoData[index];
+          final dataVideo = _videoData[index];
           return Container(
             height: 75,
-            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Colors.white,
@@ -163,38 +163,38 @@ class _MyHomePageState extends State<MyHomePage> {
             child: TextButton(
               child: Row(
                 children: [
-                  Container(
+                  SizedBox(
                     height: 70,
                     width: 100,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(5),
                       child: Image.network(
-                        data_video.image_uri.toString(),
+                        dataVideo.image_uri.toString(),
                         width: 50,
                         height: 100,
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          data_video.title,
+                          dataVideo.title,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           softWrap: true,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
                           ),
                         ),
-                        Text(data_video.channel_name, style: TextStyle(color: Colors.black),),
-                        Text(data_video.views + ' • ' + data_video.uploaded_time, style: TextStyle(color: Colors.black),),
+                        Text(dataVideo.channel_name, style: const TextStyle(color: Colors.black),),
+                        Text('${dataVideo.views} • ${dataVideo.uploaded_time}', style: const TextStyle(color: Colors.black),),
                       ],
                     ),
                   ),
@@ -203,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       if (value == 'play') {
                         //play
                       } else if (value == 'share') {
-                        _shareVideo(data_video);
+                        _shareVideo(dataVideo);
                       } else if (value == 'delete') {
                         _deleteVideoData(index);
                       }
@@ -222,7 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: Text('Delete'),
                       ),
                     ],
-                    icon: Icon(Icons.more_vert, color: Colors.black),
+                    icon: const Icon(Icons.more_vert, color: Colors.black),
                   ),
                 ],
               ),

@@ -6,10 +6,12 @@ import 'package:media_vault/screens/play_screen.dart';
 import 'package:media_vault/screens/splash_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,11 +22,11 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => SplashScreen(),
-        '/seach': (context) => SearchScreen(),
-        '/convert': (context) => ConvertScreen(),
-        '/download': (context) => DownloadScreen(),
-        '/play': (context) => PlayScreen(),
+        '/': (context) => const SplashScreen(),
+        '/seach': (context) => const SearchScreen(),
+        '/convert': (context) => const ConvertScreen(),
+        '/download': (context) => const DownloadScreen(),
+        '/play': (context) => const PlayScreen(),
       },
     );
   }

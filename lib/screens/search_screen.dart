@@ -16,10 +16,10 @@ class _SearchScreenState extends State<SearchScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    SearchScreenContent(),
-    ConvertScreen(),
-    DownloadScreen(),
-    PlayScreen(),
+    const SearchScreenContent(),
+    const ConvertScreen(),
+    const DownloadScreen(),
+    const PlayScreen(),
   ];
 
   void _onTabTapped(int index) {
@@ -61,6 +61,8 @@ class _SearchScreenState extends State<SearchScreen> {
 }
 
 class SearchScreenContent extends StatefulWidget {
+  const SearchScreenContent({super.key});
+
   @override
   _SearchScreenContentState createState() => _SearchScreenContentState();
 }
