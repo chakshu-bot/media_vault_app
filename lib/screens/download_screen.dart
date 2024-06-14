@@ -1,5 +1,3 @@
-// download_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -27,7 +25,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
     setState(() {
       _mediaFiles = files.where((file) {
-        return file.path.endsWith('.mp4') || file.path.endsWith('.mp3');
+        return file.path.endsWith('.mp3');
       }).toList();
     });
   }
@@ -45,20 +43,32 @@ class _DownloadScreenState extends State<DownloadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Downloaded Media'),
+        title: Center(child: const Text('Downloaded Media')),
+        backgroundColor: Colors.green,
       ),
       body: _mediaFiles.isEmpty
           ? const Center(child: Text('No downloaded media found'))
-          : ListView.builder(
-              itemCount: _mediaFiles.length,
-              itemBuilder: (context, index) {
-                final file = _mediaFiles[index];
-                return ListTile(
-                  leading: Icon(file.path.endsWith('.mp4') ? Icons.video_library : Icons.audiotrack),
-                  title: Text(file.path.split('/').last),
-                  onTap: () => _playMedia(file),
-                );
-              },
+          : Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.green, Colors.greenAccent],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: ListView.builder(
+                itemCount: _mediaFiles.length,
+                itemBuilder: (context, index) {
+                  final file = _mediaFiles[index];
+                  return ListTile(
+                    leading: Icon(file.path.endsWith('.mp4')
+                        ? Icons.video_library
+                        : Icons.audiotrack),
+                    title: Text(file.path.split('/').last),
+                    onTap: () => _playMedia(file),
+                  );
+                },
+              ),
             ),
     );
   }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:media_vault/screens/onboarding_screen.dart';
 import 'package:media_vault/screens/search_screen.dart';
 import 'package:media_vault/screens/convert_screen.dart';
 import 'package:media_vault/screens/download_screen.dart';
-import 'package:media_vault/screens/play_screen.dart';
 import 'package:media_vault/screens/splash_screen.dart';
 
 void main() {
@@ -22,10 +22,11 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const SplashScreen(),
+        '/': (context) => const OnBoarding(),
+        '/splash': (context) => const SplashScreen(),
         '/seach': (context) => const SearchScreen(),
         '/convert': (context) => const ConvertScreen(),
-        '/download': (context) =>  DownloadScreen(),
+        '/download': (context) => const DownloadScreen(),
         
       },
     );

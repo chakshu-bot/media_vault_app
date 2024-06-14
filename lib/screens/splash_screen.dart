@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(seconds: 2), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) =>  const SearchScreen(),
+          builder: (context) => const SearchScreen(),
         ),
       );
     });
@@ -31,7 +31,6 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            
             Text(
               'WELCOME   TO',
               style: TextStyle(
@@ -50,7 +49,6 @@ class _SplashScreenState extends State<SplashScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-             
             SizedBox(height: 20),
             CircularProgressIndicator(
               color: Colors.white,

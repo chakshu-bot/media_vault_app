@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:media_vault/models/video.dart';
 import 'package:media_vault/screens/convert_screen.dart';
 import 'package:media_vault/screens/download_screen.dart';
-import 'package:media_vault/screens/play_screen.dart';
 import 'package:media_vault/youtube_data_api.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -18,7 +17,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final List<Widget> _screens = [
     const SearchScreenContent(),
     const ConvertScreen(),
-    DownloadScreen(),
+    const DownloadScreen(),
     const Scaffold(body: Center(child: Text('Play Screen Placeholder'))),
   ];
 
@@ -81,7 +80,8 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
     try {
       const apiKey = 'AIzaSyAEcsjbv7bmgIkrYAwCpLghxDNXuvu8zjQ';
       final query = _controller.text;
-      final videos = await _youtubeDataApi.fetchSearchVideo(query, apiKey, maxResults: 69);
+      final videos =
+          await _youtubeDataApi.fetchSearchVideo(query, apiKey, maxResults: 69);
       setState(() {
         _videos = videos;
         _isLoading = false;
@@ -110,8 +110,10 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
         child: Center(
           child: Column(
             children: [
+              SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.only(left: 30, right: 30, top: 30, bottom: 20),
+                padding: const EdgeInsets.only(
+                    left: 30, right: 30, top: 30, bottom: 20),
                 child: Container(
                   color: Colors.white,
                   child: TextField(
@@ -122,17 +124,22 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                       hintText: "Search for YouTube Videos here...",
                       hintStyle: TextStyle(
                         color: Colors.black87,
-                        fontSize: 12,
+                        fontSize: 13,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
                   ),
                 ),
               ),
-              ElevatedButton(
-                onPressed: _searchVideos,
-                child: const Text("Search"),
+              ElevatedButton.icon(
+              onPressed: _searchVideos,
+              icon: Icon(Icons.search),
+              label: Text('search'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                textStyle: TextStyle(fontSize: 16),
               ),
+            ),
               const SizedBox(height: 18),
               _isLoading
                   ? const CircularProgressIndicator()
@@ -151,12 +158,13 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                                   )
                                 : const Icon(Icons.broken_image),
                             title: Text(video.title ?? 'No title'),
-                            subtitle: Text(video.channelName ?? 'No channel name'),
+                            subtitle:
+                                Text(video.channelName ?? 'No channel name'),
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ConvertScreen(),
+                                  builder: (context) => const ConvertScreen(),
                                   settings: RouteSettings(
                                     arguments: video,
                                   ),

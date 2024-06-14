@@ -57,12 +57,15 @@ class _ConvertScreenState extends State<ConvertScreen> {
     });
 
     try {
-      final manifest = await _youtubeExplode.videos.streamsClient.getManifest(videoId);
+      final manifest =
+          await _youtubeExplode.videos.streamsClient.getManifest(videoId);
       final audioStreamInfo = manifest.audioOnly.withHighestBitrate();
-      final audioStream = _youtubeExplode.videos.streamsClient.get(audioStreamInfo);
+      final audioStream =
+          _youtubeExplode.videos.streamsClient.get(audioStreamInfo);
 
       final directory = await getApplicationDocumentsDirectory();
-      final filePath = '${directory.path}/${_video?.title ?? 'audio'}.mp3';
+      final sanitizedFileName = _sanitizeFileName(_video?.title ?? 'audio');
+      final filePath = '${directory.path}/$sanitizedFileName.mp3';
       final file = File(filePath);
       final output = file.openWrite(mode: FileMode.writeOnlyAppend);
 
@@ -70,7 +73,6 @@ class _ConvertScreenState extends State<ConvertScreen> {
       await output.flush();
       await output.close();
 
-      // Check if file exists
       final fileExists = await file.exists();
       if (fileExists) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -91,6 +93,10 @@ class _ConvertScreenState extends State<ConvertScreen> {
     }
   }
 
+  String _sanitizeFileName(String fileName) {
+    return fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+  }
+
   String? _extractVideoId(String url) {
     final uri = Uri.parse(url);
     if (uri.queryParameters.containsKey('v')) {
@@ -103,12 +109,18 @@ class _ConvertScreenState extends State<ConvertScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Convert Screen')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return SafeArea(
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.greenAccent, Colors.cyanAccent],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: Column(
           children: [
+            SizedBox(height: 40),
             TextField(
               controller: _controller,
               decoration: const InputDecoration(
@@ -116,22 +128,28 @@ class _ConvertScreenState extends State<ConvertScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
+            ElevatedButton.icon(
               onPressed: _fetchVideoDetails,
-              child: const Text('Fetch Video Details'),
+              icon: Icon(Icons.search),
+              label: Text('search'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                textStyle: TextStyle(fontSize: 16),
+              ),
             ),
             const SizedBox(height: 16),
             if (_isLoading) const CircularProgressIndicator(),
             if (_video != null) ...[
               Image.network(_video!.thumbnails.highResUrl),
               Text(_video!.title),
+              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _isDownloading
                     ? null
                     : () => _downloadFile(_video!.id.value),
                 child: _isDownloading
                     ? const CircularProgressIndicator()
-                    : const Text('Download MP3'),
+                    : const Text('Download in MP3'),
               ),
             ],
           ],

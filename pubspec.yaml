@@ -44,6 +44,11 @@ dependencies:
   provider: ^6.1.2
   flutter_dotenv: ^5.1.0
   youtube_explode_dart: ^1.12.4
+  ffmpeg_kit_flutter: ^6.0.3
+  just_audio: ^0.9.38
+  flick_video_player: ^0.8.0
+  lottie: ^3.0.0
+  smooth_page_indicator: ^1.1.0
 
 dev_dependencies:
   flutter_test:

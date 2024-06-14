@@ -28,7 +28,7 @@ class Video {
       id: json['id'],
       title: json['snippet']['title'],
       thumbnailUrl: json['snippet']['thumbnails']['default']['url'],
-      videoUrl: 'https://www.youtube.com/watch?v=${json['id']}', // Construct the YouTube URL
+      videoUrl: 'https://www.youtube.com/watch?v=${json['id']}', 
     );
   }
 }
