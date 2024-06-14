@@ -25,8 +25,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/seach': (context) => const SearchScreen(),
         '/convert': (context) => const ConvertScreen(),
-        '/download': (context) => const DownloadScreen(),
-        '/play': (context) => const PlayScreen(),
+        '/download': (context) =>  DownloadScreen(),
+        
       },
     );
   }

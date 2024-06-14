@@ -18,8 +18,8 @@ class _SearchScreenState extends State<SearchScreen> {
   final List<Widget> _screens = [
     const SearchScreenContent(),
     const ConvertScreen(),
-    const DownloadScreen(),
-    const PlayScreen(),
+    DownloadScreen(),
+    const Scaffold(body: Center(child: Text('Play Screen Placeholder'))),
   ];
 
   void _onTabTapped(int index) {
@@ -35,8 +35,8 @@ class _SearchScreenState extends State<SearchScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
-        selectedItemColor: Colors.blue,  
-        unselectedItemColor: Colors.grey,  
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
@@ -143,15 +143,24 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                           final video = _videos[index];
                           return ListTile(
                             leading: video.thumbnailUrl != null
-                                ? Image.network(video.thumbnailUrl!)
-                                : null,
+                                ? Image.network(
+                                    video.thumbnailUrl!,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Icon(Icons.broken_image);
+                                    },
+                                  )
+                                : const Icon(Icons.broken_image),
                             title: Text(video.title ?? 'No title'),
                             subtitle: Text(video.channelName ?? 'No channel name'),
                             onTap: () {
-                              Navigator.pushNamed(
+                              Navigator.push(
                                 context,
-                                '/details',
-                                arguments: video,
+                                MaterialPageRoute(
+                                  builder: (context) => ConvertScreen(),
+                                  settings: RouteSettings(
+                                    arguments: video,
+                                  ),
+                                ),
                               );
                             },
                           );
