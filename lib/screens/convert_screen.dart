@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class ConvertScreen extends StatefulWidget {
@@ -51,51 +54,102 @@ class _ConvertScreenState extends State<ConvertScreen> {
     }
   }
 
-  Future<void> _downloadFile(String videoId) async {
-    setState(() {
-      _isDownloading = true;
-    });
+  // Future<void> _downloadFile(String videoId) async {
+  //   setState(() {
+  //     _isDownloading = true;
+  //   });
+  //
+  //   try {
+  //     final manifest =
+  //         await _youtubeExplode.videos.streamsClient.getManifest(videoId);
+  //     final streamInfo = manifest.muxed.withHighestBitrate();
+  //     final stream = _youtubeExplode.videos.streamsClient.get(streamInfo);
+  //     // final audioStreamInfo = manifest.audioOnly.withHighestBitrate();
+  //     // final audioStream =
+  //     //     _youtubeExplode.videos.streamsClient.get(audioStreamInfo);
+  //
+  //     final directory = await getApplicationDocumentsDirectory();
+  //     final sanitizedFileName = _sanitizeFileName(_video?.title ?? 'audio');
+  //     final filePath = '${directory.path}/$sanitizedFileName.mp3';
+  //     final file = File(filePath);
+  //     final output = file.openWrite(mode: FileMode.writeOnlyAppend);
+  //
+  //     await stream.pipe(output);
+  //     await output.flush();
+  //     await output.close();
+  //
+  //     final fileExists = await file.exists();
+  //     if (fileExists) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('File downloaded to: $filePath')),
+  //       );
+  //     } else {
+  //       print('File does not exist at: $filePath');
+  //     }
+  //   } catch (e) {
+  //     print('Error downloading file: $e');
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Error downloading file: $e')),
+  //     );
+  //   } finally {
+  //     setState(() {
+  //       _isDownloading = false;
+  //     });
+  //   }
+  // }
 
+  Future<bool> requestStoragePermission() async {
+    if (await Permission.manageExternalStorage.isGranted ||
+        await Permission.storage.isGranted) return true;
+
+    final status = await Permission.manageExternalStorage.request();
+    return status.isGranted;
+  }
+
+  Future<void> downloadMp3FromNode(String videoUrl) async {
     try {
-      final manifest =
-          await _youtubeExplode.videos.streamsClient.getManifest(videoId);
-      final audioStreamInfo = manifest.audioOnly.withHighestBitrate();
-      final audioStream =
-          _youtubeExplode.videos.streamsClient.get(audioStreamInfo);
+      final uri = Uri.parse("http://192.168.29.48:3000/download");
+      final response = await http.post(
+        uri,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"url": videoUrl}),
+      );
 
-      final directory = await getApplicationDocumentsDirectory();
-      final sanitizedFileName = _sanitizeFileName(_video?.title ?? 'audio');
-      final filePath = '${directory.path}/$sanitizedFileName.mp3';
-      final file = File(filePath);
-      final output = file.openWrite(mode: FileMode.writeOnlyAppend);
+      if (response.statusCode == 200) {
+        // 📁 Save to app-private directory (no permission needed)
+        final dir = await getApplicationDocumentsDirectory();
+        final filePath = '${dir.path}/${_video?.title}.mp3';
+        final file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
 
-      await audioStream.pipe(output);
-      await output.flush();
-      await output.close();
+        print("✅ Audio saved to: $filePath");
 
-      final fileExists = await file.exists();
-      if (fileExists) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('File downloaded to: $filePath')),
-        );
+        final hasPermission = await requestStoragePermission();
+        if (!hasPermission) {
+          print("❌ Storage permission not granted");
+          return;
+        }
+
+        final dir1 = Directory('/storage/emulated/0/Download');
+        final filePath1 = '${dir1.path}/${_video?.title}.mp3';
+        final file1 = File(filePath1);
+
+        await file1.writeAsBytes(response.bodyBytes);
+
+        print("✅ File saved to: $filePath");
       } else {
-        print('File does not exist at: $filePath');
+        print("❌ Server error: ${response.statusCode}");
       }
     } catch (e) {
-      print('Error downloading file: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error downloading file: $e')),
-      );
-    } finally {
-      setState(() {
-        _isDownloading = false;
-      });
+      print("❌ Download error: $e");
     }
   }
 
-  String _sanitizeFileName(String fileName) {
-    return fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
-  }
+
+
+  // String _sanitizeFileName(String fileName) {
+  //   return fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+  // }
 
   String? _extractVideoId(String url) {
     final uri = Uri.parse(url);
@@ -146,7 +200,7 @@ class _ConvertScreenState extends State<ConvertScreen> {
               ElevatedButton(
                 onPressed: _isDownloading
                     ? null
-                    : () => _downloadFile(_video!.id.value),
+                    : () => downloadMp3FromNode(_controller.text.trim()),
                 child: _isDownloading
                     ? const CircularProgressIndicator()
                     : const Text('Download in MP3'),

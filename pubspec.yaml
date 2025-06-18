@@ -48,6 +48,7 @@ dependencies:
   flick_video_player:
   lottie:
   smooth_page_indicator:
+  permission_handler:
 
 dev_dependencies:
   flutter_test:
