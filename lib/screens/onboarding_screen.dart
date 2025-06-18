@@ -46,10 +46,16 @@ class _OnBoardingState extends State<OnBoarding> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   GestureDetector(
+                      // onTap: () {
+                      //   _controller.nextPage(
+                      //       duration: const Duration(microseconds: 500),
+                      //       curve: Curves.easeIn);
+                      // },
                       onTap: () {
-                        _controller.nextPage(
-                            duration: const Duration(microseconds: 500),
-                            curve: Curves.easeIn);
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                              return const SplashScreen();
+                            }));
                       },
                       child: const Text("Skip")),
                   SmoothPageIndicator(controller: _controller, count: 2),
